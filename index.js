@@ -94,7 +94,7 @@ client.on("message", async (message) => {
 		case "set":
 			if(!message.author.id === "203437397478735873") return message.reply(":middle_finger:");
 			if(!args[0] || !args[1] || !args[2]) return message.reply(":thinking:");
-			const user = users.get(args[0]);
+			let user = users.get(args[0]);
 			if(!user) return message.reply(":thinking:");
 			user[args[1]] = args[2];
 			user.save();
@@ -103,7 +103,7 @@ client.on("message", async (message) => {
 		case "get":
 			if(!message.author.id === "203437397478735873") return message.reply(":middle_finger:");
 			if(!args[0] || !args[1]) return message.reply(":thinking:");
-			const user = users.get(args[0]);
+			let user = users.get(args[0]);
 			if(!user) return message.reply(":thinking:");
 			return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${user[args[1]]}`);
 		
