@@ -1,7 +1,8 @@
 module.exports = {
 	bot: {
 		prefix: "%",
-		token: "NTQ3MTg3MjM2NDI5MzY1MjY4.D0zKZw.pzISHT6jHmi3FzD87dXhg7WI6yc",
+		// This shouldn't break anything, let me know if it does
+		token: (process.env && process.env.TOKEN) || "NTQ3MTg3MjM2NDI5MzY1MjY4.D0zKZw.pzISHT6jHmi3FzD87dXhg7WI6yc",
 		levels: {
 			roles: {
 				"2": "test",

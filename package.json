@@ -15,5 +15,8 @@
     "pg": "^7.8.0",
     "sequelize": "^4.42.0",
     "uws": "^9.14.0"
+  },
+  "devDependencies": {
+    "dotenv": "^6.2.0"
   }
 }
