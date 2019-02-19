@@ -63,9 +63,9 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	users.add(message.member.id, "exp", 1);
 
-	const currentLevel = Math.floor(0.1 * Math.sqrt(users.get(message.member.id, "exp")));
+	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
-	if(users.get(message.member.id, "level") < currentLevel){
+	if(users.getInf(message.member.id, "level") < currentLevel){
 		users.add(message.member.id, "level", 1);
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
@@ -116,8 +116,8 @@ client.on("message", async (message) => {
 			.setColor("#3CB4FE")
 			.setAuthor(target.tag, target.displayAvatarURL)
 			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank + 1] : ":beginner: " + String(rank + 1)}`, true)
-			.addField("**:large_orange_diamond: Level**", users.get(target.id, "level"), true)
-			.addField("**:diamond_shape_with_a_dot_inside: EXP**", `${users.get(target.id, "exp")}`, true);
+			.addField("**:large_orange_diamond: Level**", users.getInf(target.id, "level"), true)
+			.addField("**:diamond_shape_with_a_dot_inside: EXP**", users.getInf(target.id, "exp"), true);
 		return message.channel.send(embed);
 	}else if(command == "rankings"){
 		const embed = new RichEmbed()
@@ -126,7 +126,7 @@ client.on("message", async (message) => {
 		users.sort((a, b) => b.exp - a.exp)
 			.filter(user => client.users.has(user.user_id))
 			.first(15)
-			.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji(position + 1) : ":beginner: " + String(position + 1)} ${client.users.get(user.user_id).tag}`, stripIndents`
+			.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji[position + 1] : ":beginner: " + String(position + 1)} ${client.users.get(user.user_id).tag}`, stripIndents`
 				:large_orange_diamond: Level: ${user.level}
 				:diamond_shape_with_a_dot_inside: EXP: ${user.exp}
 			`, true));
@@ -134,9 +134,11 @@ client.on("message", async (message) => {
 	}else if(command == "help"){
 		const msg = stripIndents`
 			[regular brackets] = optional, user_mention = mentioned user with @ or <@user_id>
+			===================
 			rank [user_mention] - View a user's rank or level.
 			rankings - View the top 15 users with the most EXP / highest Level.
 			ping - Pong!
+			===================
 		`;
 		return message.channel.send(msg, {code: true});
 	}
