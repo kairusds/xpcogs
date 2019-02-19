@@ -65,7 +65,7 @@ function createUsers(){
 	client.guilds.map((guild, index) => {
 		if(!guild.available) return;
 		guild.members.map(async (member, index) => {
-			if(users.get(member.id)) return;
+			if(users.get(member.id) || member.user.bot) return;
 			const newUser = await Users.create({
 				user_id: member.id,
 				exp: 0,
