@@ -75,11 +75,11 @@ client.on("message", async (message) => {
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
 		const gainedExp = Math.floor((Math.random() * (15 - 5 + 1)) + 5));
-		users.add(message.member.id, "exp", gainedExp);
+		users.add(message.member.id, "exp", Number(gainedExp));
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
 			if(index > -1) timeout.splice(index, 1);
-		}, 1000 * 30);
+		}, 1000 * 45);
 	}
 	
 	// 100 exp = level 1, 200 exp = level 2 and so on...
@@ -130,9 +130,7 @@ client.on("message", async (message) => {
 		let target = message.author;
 		if(args[0]) target = userMentionRegex(args[0]);
 		if(!target) return message.channel.send("That user cannot be found.");
-		const rank = users.map((user, position) => {
-			if(user.user_id == message.member.id) return position;
-		});
+		const rank = [...users.sort((a, b) => b.exp - a.exp).keys()].indexOf(target.id);
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
 			.setAuthor(target.tag, target.displayAvatarURL)
