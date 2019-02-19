@@ -73,13 +73,13 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
-		timeout.push(message.member.id);
 		const gainedExp = Math.floor((Math.random() * (8 - 2 + 1)) + 2);
 		users.add(message.member.id, "exp", Number(gainedExp));
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
 			if(index > -1) timeout.splice(index, 1);
 		}, 1000 * 45);
+		timeout.push(message.member.id);
 	}
 	
 	// 100 exp = level 1, 200 exp = level 2 and so on...
