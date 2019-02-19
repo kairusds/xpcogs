@@ -14,15 +14,12 @@ module.exports = {
 		}
 	},
 	// settings for sequelize database connection
-	// currently configured for use of a heroku postgresql database
-	// the environment variables are passed by heroku when the dyno starts up
 	database: {
-		username: process.env.DB_USERNAME,
-		password: process.env.DB_PASSWORD,
-		database: process.env.DB_NAME,
-		host: process.env.DB_HOSTNAME,
-		dialect: "mysql",
-		database_url: process.env.DATABASE_URL,
+		dialect: "postgres",
+		protocol: "postgres",
+		dialectOptions: {
+			ssl: true
+		},
 		logging: false,
 		operatorsAliases: false
 	}
