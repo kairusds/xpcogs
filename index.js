@@ -153,7 +153,7 @@ client.on("message", async (message) => {
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
 			.setTitle("Rankings");
-		users.sort((a, b) => b.level - a.level).sort((a, b) => b.exp - a.exp)
+		users.sort((a, b) => (b.level + b.exp) - (a.level + a.exp))
 			.filter(user => client.users.has(user.user_id))
 			.first(15)
 			.map((user, position) => embed.addField(`${position < 3 ? topRankEmoji[position + 1] : `:beginner: ${position + 1}`}    ${client.users.get(user.user_id).tag}`, stripIndents`
