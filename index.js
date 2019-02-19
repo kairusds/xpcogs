@@ -65,6 +65,7 @@ function userMentionRegex(mention){
 client.once("ready", async () => {
 	const storedExps = await Users.findAll();
 	storedExps.forEach(b => users.set(b.user_id, b));
+	await client.user.setActivity(`Supple Loli | ${prefix}help`, {type: "WATCHING"});
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
