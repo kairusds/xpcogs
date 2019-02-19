@@ -38,15 +38,6 @@ Reflect.defineProperty(users, "add", {
 	}
 });
 
-Reflect.defineProperty(users, "setInf", {
-	value: (id, key, amount) => {
-		const user = users.get(id);
-		if (!user) return null;
-		user[key] = Number(amount);
-		return user.save();
-	}
-});
-
 Reflect.defineProperty(users, "getInf", {
 	value: (id, key) => {
 		const user = users.get(id);
@@ -60,7 +51,7 @@ function userMentionRegex(mention){
 }
 
 function createUsers(){
-	let count = 0;
+	var count = 0;
 	// waaw double map
 	client.guilds.map((guild, index) => {
 		if(!guild.available) return;
@@ -104,7 +95,9 @@ client.on("message", async (message) => {
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
 	if(users.getInf(message.member.id, "level") < currentLevel){
-		users.setInf(message.member.id, "exp", 0);
+		const user = users.get(message.member.id);
+		user.exp = 0;
+		user.save();
 		users.add(message.member.id, "level", 1);
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
@@ -174,10 +167,21 @@ client.on("message", async (message) => {
 			===================
 			rank [user_mention] - View a user's rank or level.
 			rankings - View the top 15 users with the most EXP / highest Level.
+			info - View info regarding the bot.
 			ping - Pong!
 			===================
 		`;
 		return message.channel.send(msg, {code: true});
+	}else if(command == "info"){
+		const embed = new RichEmbed()
+			.setColor("#3CB4FE")
+			.setTitle("Info")
+			.setAuthor(client.user.tag, client.user.displayAvatarURL, "https://twitter.com/kairusds")
+			.addField("Author", "HarveyHans (kairusds)", true)
+			.addField("Collaborator", "MindfulMinun (Benji)", true)
+			.addField("Users", client.users.size, true)
+			.addField("Server Platform", process.platform, true);
+		message.channel.send(embed);
 	}
 });
 
