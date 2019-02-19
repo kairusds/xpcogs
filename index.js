@@ -30,7 +30,7 @@ Reflect.defineProperty(users, "add", {
 			const newUser = await Users.create({
 				user_id: id,
 				exp: amount,
-				level: 1
+				level: 0
 			});
 			users.set(id, newUser);
 			return newUser;
@@ -73,7 +73,8 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
-		const gainedExp = Math.floor((Math.random() * (15 - 5 + 1)) + 5);
+		timeout.push(message.member.id);
+		const gainedExp = Math.floor((Math.random() * (8 - 2 + 1)) + 2);
 		users.add(message.member.id, "exp", Number(gainedExp));
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
