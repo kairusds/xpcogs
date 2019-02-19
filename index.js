@@ -71,7 +71,7 @@ function createUsers(){
 				exp: 0,
 				level: 0
 			});
-			users.set(id, newUser);
+			users.set(member.id, newUser);
 			count++;
 		});
 	});
