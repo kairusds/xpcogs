@@ -1,5 +1,5 @@
 // This is for me (Mindful) testing locally
-require('dotenv').config()
+// require('dotenv').config()
 
 const {prefix, token, levels} = require("./config").bot;
 const {Client, Collection, RichEmbed} = require("discord.js");
