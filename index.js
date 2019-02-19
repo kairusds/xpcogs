@@ -7,6 +7,7 @@ const client = new Client();
 const {Users} = require("./dbObjects");
 const {oneLine, stripIndents} = require("common-tags");
 const users = new Collection();
+const timeout = [];
 const topRankEmoji = {
 	"1": ":first_place:",
 	"2": ":second_place:",
@@ -61,8 +62,15 @@ client.once("ready", async () => {
 client.on("message", async (message) => {
 	if(message.author.bot || !message.guild) return; // bot not allowed, guild-only
 	if(!message.guild.available) return;
-	users.add(message.member.id, "exp", 1);
-
+	// exp spam prevention
+	if(!timeout.includes(message.member.id)){
+		users.add(message.member.id, "exp", 1);
+		client.setTimeout(() => {
+			const index = timeout.indexOf(message.member.id);
+			if(index > -1) timeout.splice(index, 1);
+		}, 1000 * 30);
+	}
+	
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
 	if(users.getInf(message.member.id, "level") < currentLevel){
@@ -109,9 +117,9 @@ client.on("message", async (message) => {
 		let target = message.author;
 		if(args[0]) target = userMentionRegex(args[0]);
 		if(!target) return message.channel.send("That user cannot be found.");
-		const rank = [...users.keys()].indexOf(target.id); /* users.map((user, position) => {
+		const rank = users.map((user, position) => {
 			if(user.user_id == message.member.id) return position;
-		}); */
+		});
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
 			.setAuthor(target.tag, target.displayAvatarURL)
