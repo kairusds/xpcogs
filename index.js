@@ -134,7 +134,7 @@ client.on("message", async (message) => {
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
 			.setAuthor(target.tag, target.displayAvatarURL)
-			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank + 1] : ":beginner: " + String(rank + 1)}`, true)
+			.addField("**Rank**", `${rank < 3 ? topRankEmoji[rank + 1] : ":beginner: " + String(rank + 1)}`, true)
 			.addField("**:large_orange_diamond: Level**", users.getInf(target.id, "level"), true)
 			.addField("**:diamond_shape_with_a_dot_inside: EXP**", users.getInf(target.id, "exp"), true);
 		return message.channel.send(embed);
@@ -145,7 +145,7 @@ client.on("message", async (message) => {
 		users.sort((a, b) => b.exp - a.exp)
 			.filter(user => client.users.has(user.user_id))
 			.first(15)
-			.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji[position + 1] : `:beginner: ${position + 1}`} ${client.users.get(user.user_id).tag}`, stripIndents`
+			.map((user, position) => embed.addField(`${position < 3 ? topRankEmoji[position + 1] : `:beginner: ${position + 1}`}    ${client.users.get(user.user_id).tag}`, stripIndents`
 				:large_orange_diamond: Level: ${user.level}
 				:diamond_shape_with_a_dot_inside: EXP: ${user.exp}
 			`, true));
