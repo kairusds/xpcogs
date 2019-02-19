@@ -73,7 +73,7 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
-		const gainedExp = Math.floor((Math.random() * (8 - 2 + 1)) + 2);
+		const gainedExp = Math.floor((Math.random() * (8 - 4 + 1)) + 4);
 		users.add(message.member.id, "exp", Number(gainedExp));
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
@@ -145,7 +145,7 @@ client.on("message", async (message) => {
 		users.sort((a, b) => b.exp - a.exp)
 			.filter(user => client.users.has(user.user_id))
 			.first(15)
-			.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji[position + 1] : ":beginner: " + String(position + 1)} ${client.users.get(user.user_id).tag}`, stripIndents`
+			.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji[position + 1] : `:beginner: ${position + 1}`} ${client.users.get(user.user_id).tag}`, stripIndents`
 				:large_orange_diamond: Level: ${user.level}
 				:diamond_shape_with_a_dot_inside: EXP: ${user.exp}
 			`, true));
