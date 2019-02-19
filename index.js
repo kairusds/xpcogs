@@ -6,6 +6,7 @@ const {Client, Collection, RichEmbed} = require("discord.js");
 const client = new Client();
 const {Users} = require("./dbObjects");
 const {oneLine, stripIndents} = require("common-tags");
+const random = require("unique-random");
 const users = new Collection();
 const timeout = [];
 const topRankEmoji = {
@@ -41,6 +42,15 @@ Reflect.defineProperty(users, "add", {
 	}
 });
 
+Reflect.defineProperty(users, "setInf", {
+	value: async function add(id, key, amount) {
+		const user = users.get(id);
+		if (!user) return null;
+		user[key] = Number(amount);
+		return user.save();
+	}
+});
+
 Reflect.defineProperty(users, "getInf", {
 	value: function get(id, key){
 		const user = users.get(id);
@@ -64,16 +74,18 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
-		users.add(message.member.id, "exp", 1);
+		users.add(message.member.id, "exp", random(5, 13));
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
 			if(index > -1) timeout.splice(index, 1);
 		}, 1000 * 30);
 	}
 	
+	// 100 exp = level 1, 200 exp = level 2 and so on...
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
 	if(users.getInf(message.member.id, "level") < currentLevel){
+		users.setInf(message.member.id, "exp", 0);
 		users.add(message.member.id, "level", 1);
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
