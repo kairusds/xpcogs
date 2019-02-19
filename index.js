@@ -20,11 +20,8 @@ client.setTimeout(() => {
 	process.exit(0);
 }, 60 * 1000 * 60 * 12);
 
-// original code taken from discordjs.guide examples
-// i'll improve this project in the future
-
 Reflect.defineProperty(users, "add", {
-	value: async function add(id, key, amount) {
+	value: async (id, key, amount) => {
 		const user = users.get(id);
 		if (!user) {
 			const newUser = await Users.create({
@@ -42,7 +39,7 @@ Reflect.defineProperty(users, "add", {
 });
 
 Reflect.defineProperty(users, "setInf", {
-	value: async function add(id, key, amount) {
+	value: (id, key, amount) => {
 		const user = users.get(id);
 		if (!user) return null;
 		user[key] = Number(amount);
@@ -51,7 +48,7 @@ Reflect.defineProperty(users, "setInf", {
 });
 
 Reflect.defineProperty(users, "getInf", {
-	value: function get(id, key){
+	value: (id, key) => {
 		const user = users.get(id);
 		return user ? user[key] : 0;
 	}
@@ -62,15 +59,35 @@ function userMentionRegex(mention){
 	return client.users.get(matches[1]);
 }
 
+function createUsers(){
+	let count = 0;
+	// waaw double map
+	client.guilds.map((guild, index) => {
+		if(!guild.available) return;
+		guild.members.map(async (member, index) => {
+			if(users.get(member.id)) return;
+			const newUser = await Users.create({
+				user_id: member.id,
+				exp: 0,
+				level: 0
+			});
+			users.set(id, newUser);
+			count++;
+		});
+	});
+	console.info(`Inserted ${count} users to the database.`);
+}
+
 client.once("ready", async () => {
 	const storedExps = await Users.findAll();
 	storedExps.forEach(b => users.set(b.user_id, b));
 	await client.user.setActivity(`Supple Loli | ${prefix}help`, {type: "WATCHING"});
+	createUsers();
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
 client.on("message", async (message) => {
-	if(message.author.bot || !message.guild) return; // bot not allowed, guild-only
+	if(message.author.bot || !message.guild) return;
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
