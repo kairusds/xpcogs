@@ -4,7 +4,6 @@ const client = new Client();
 const {Users} = require("./dbObjects");
 const {oneLine, stripIndents} = require("common-tags");
 const users = new Collection();
-const timeout = [];
 const topRankEmoji = {
 	"1": ":first_place:", "2": ":second_place:", "3": ":third_place:"
 };
@@ -21,7 +20,7 @@ client.setTimeout(() => {
 Reflect.defineProperty(users, "add", {
 	value: async function add(id, key, amount){
 		const user = users.get(id);
-		if(!user && key == "exp"){
+		if(!user){
 			const newUser = await Users.create({
 				user_id: id,
 				exp: amount,
@@ -57,33 +56,24 @@ client.once("ready", async () => {
 client.on("message", async (message) => {
 	if(message.author.bot || !message.guild) return; // bot not allowed, guild-only
 	if(!message.guild.available) return;
-	if(!timeout.includes(message.member.id)){
-		timeout.push(message.member.id);
-		client.setTimeout(() => {
-			const index = timeout.indexOf(message.member.id);
-			if(index > -1){
-				timeout.splice(index, 1);
-			}
-		}, 1000 * 60);
-		users.add(message.member.id, "exp", 1);
-		
-		const currentLevel = Math.floor(0.1 * Math.sqrt(users.get(message.member.id, "exp")));
-		const {roles} = levels;
-		if(users.get(message.member.id, "level") < currentLevel){
-			users.add(message.member.id, "level", 1);
-			const embed = new RichEmbed()
-				.setColor("#3CB4FE")
-				.setTitle("Level Up!")
-				.setAuthor(message.author.tag, message.author.displayAvatarURL)
-				.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
-			message.channel.send(embed);
-		}
+	users.add(message.member.id, "exp", 1);
+	
+	const currentLevel = Math.floor(0.1 * Math.sqrt(users.get(message.member.id, "exp")));
+	const {roles} = levels;
+	if(users.get(message.member.id, "level") < currentLevel){
+		users.add(message.member.id, "level", 1);
+		const embed = new RichEmbed()
+			.setColor("#3CB4FE")
+			.setTitle("Level Up!")
+			.setAuthor(message.author.tag, message.author.displayAvatarURL)
+			.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
+		message.channel.send(embed);
+	}
 
-		if(currentLevel in roles){
-			const aquiredRole = message.guild.roles.find(val => val.name === roles[currentLevel]);
-			message.member.addRole(acquiredRole);
-			message.reply(`You have acquired the \"${acquiredRole.name}\" role.`);
-		}
+	if(currentLevel in roles){
+		const aquiredRole = message.guild.roles.find(val => val.name === roles[currentLevel]);
+		message.member.addRole(acquiredRole);
+		message.reply(`You have acquired the \"${acquiredRole.name}\" role.`);
 	}
 
 	if(!message.content.startsWith(prefix)) return;
@@ -98,9 +88,7 @@ client.on("message", async (message) => {
 		user[args[1]] = args[2];
 		user.save();
 		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${args[2]}`);
-	}
-	
-	if(command == "get"){
+	}else if(command == "get"){
 		if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
 		if(!args[0] || !args[1]) return message.reply(":thinking:");
 		const user = users.get(args[0]);
@@ -113,7 +101,8 @@ client.on("message", async (message) => {
 			${client.ping ? `:heartbeat: ${Math.round(client.ping)}ms.` : ""}
 		`);
 	}else if(command == "rank"){
-		const target = userMentionRegex(args[0]) || message.author;
+		let target = message.author;
+		if(args[0]) target = userMentionRegex(args[0]);
 		if(!target) return message.channel.send("That user cannot be found.");
 		const rank = [...users.keys()].indexOf(target.id); /* users.map((user, position) => {
 			if(user.user_id == message.member.id) return position;
