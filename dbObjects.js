@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const config = require("./config").database;
-const sequelize = new Sequelize(config.database_url, config)
+const sequelize = new Sequelize(process.env.DATABASE_URL, config)
 
 const Users = sequelize.import("models/Users");
 sequelize.sync().then(() => console.log("Levels database synced!")).catch(console.error);
