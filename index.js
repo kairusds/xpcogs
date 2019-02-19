@@ -90,65 +90,61 @@ client.on("message", async (message) => {
 	const args = message.content.slice(prefix.length).split(/ +/g);
 	const command = args.shift().toLowerCase();
 
-	switch(command){
-		case "set":
-			if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
-			if(!args[0] || !args[1] || !args[2]) return message.reply(":thinking:");
-			let user = users.get(args[0]);
-			if(!user) return message.reply(":thinking:");
-			user[args[1]] = args[2];
-			user.save();
-			return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${args[2]}`);
-		
-		case "get":
-			if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
-			if(!args[0] || !args[1]) return message.reply(":thinking:");
-			let user = users.get(args[0]);
-			if(!user) return message.reply(":thinking:");
-			return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${user[args[1]]}`);
-		
-		case "ping":
-			const pingMsg = await message.channel.send("Pinging...");
-			return pingMsg.edit(oneLine`
-				Pong! :heartpulse: ${pingMsg.createdTimestamp - message.createdTimestamp}ms ||
-				${client.ping ? `:heartbeat: ${Math.round(client.ping)}ms.` : ""}
-			`);
-		
-		case "rank":
-			const target = userMentionRegex(args[0]) || message.author;
-			if(!target) return message.channel.send("That user cannot be found.");
-			const rank = [...users.keys()].indexOf(target.id); /* users.map((user, position) => {
-				if(user.user_id == message.member.id) return position;
-			}); */
-			const embed = new RichEmbed()
-				.setColor("#3CB4FE")
-				.setAuthor(target.tag, target.displayAvatarURL)
-				.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank + 1] : ":beginner: " + String(rank + 1)}`, true)
-				.addField("**:large_orange_diamond: Level**", users.get(target.id, "level"), true)
-				.addField("**:diamond_shape_with_a_dot_inside: EXP**", `${users.get(target.id, "exp")}`, true);
-			return message.channel.send(embed);
-		
-		case "rankings":
-			const embed = new RichEmbed()
-				.setColor("#3CB4FE")
-				.setTitle("Rankings");
-			users.sort((a, b) => b.exp - a.exp)
-				.filter(user => client.users.has(user.user_id))
-				.first(15)
-				.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji(position + 1) : ":beginner: " + String(position + 1)} ${client.users.get(user.user_id).tag}`, stripIndents`
-					:large_orange_diamond: Level: ${user.level}
-					:diamond_shape_with_a_dot_inside: EXP: ${user.exp}
-				`, true));
-			return message.channel.send(embed);
-			
-		case "help":
-			const msg = stripIndents`
-				[regular brackets] = optional, user_mention = mentioned user with @ or <@user_id>
-				rank [user_mention] - View a user's rank or level.
-				rankings - View the top 15 users with the most EXP / highest Level.
-				ping - Pong!
-			`;
-			return message.channel.send(msg, {code: true});
+	if(command == "set"){
+		if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
+		if(!args[0] || !args[1] || !args[2]) return message.reply(":thinking:");
+		const user = users.get(args[0]);
+		if(!user) return message.reply(":thinking:");
+		user[args[1]] = args[2];
+		user.save();
+		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${args[2]}`);
+	}
+	
+	if(command == "get"){
+		if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
+		if(!args[0] || !args[1]) return message.reply(":thinking:");
+		const user = users.get(args[0]);
+		if(!user) return message.reply(":thinking:");
+		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${user[args[1]]}`);
+	}else if(command == "ping"){
+		const pingMsg = await message.channel.send("Pinging...");
+		return pingMsg.edit(oneLine`
+			Pong! :heartpulse: ${pingMsg.createdTimestamp - message.createdTimestamp}ms ||
+			${client.ping ? `:heartbeat: ${Math.round(client.ping)}ms.` : ""}
+		`);
+	}else if(command == "rank"){
+		const target = userMentionRegex(args[0]) || message.author;
+		if(!target) return message.channel.send("That user cannot be found.");
+		const rank = [...users.keys()].indexOf(target.id); /* users.map((user, position) => {
+			if(user.user_id == message.member.id) return position;
+		}); */
+		const embed = new RichEmbed()
+			.setColor("#3CB4FE")
+			.setAuthor(target.tag, target.displayAvatarURL)
+			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank + 1] : ":beginner: " + String(rank + 1)}`, true)
+			.addField("**:large_orange_diamond: Level**", users.get(target.id, "level"), true)
+			.addField("**:diamond_shape_with_a_dot_inside: EXP**", `${users.get(target.id, "exp")}`, true);
+		return message.channel.send(embed);
+	}else if(command == "rankings"){
+		const embed = new RichEmbed()
+			.setColor("#3CB4FE")
+			.setTitle("Rankings");
+		users.sort((a, b) => b.exp - a.exp)
+			.filter(user => client.users.has(user.user_id))
+			.first(15)
+			.map((user, position) => embed.addField(`${position < 4 ? topRankEmoji(position + 1) : ":beginner: " + String(position + 1)} ${client.users.get(user.user_id).tag}`, stripIndents`
+				:large_orange_diamond: Level: ${user.level}
+				:diamond_shape_with_a_dot_inside: EXP: ${user.exp}
+			`, true));
+		return message.channel.send(embed);
+	}else if(command == "help"){
+		const msg = stripIndents`
+			[regular brackets] = optional, user_mention = mentioned user with @ or <@user_id>
+			rank [user_mention] - View a user's rank or level.
+			rankings - View the top 15 users with the most EXP / highest Level.
+			ping - Pong!
+		`;
+		return message.channel.send(msg, {code: true});
 	}
 });
 
