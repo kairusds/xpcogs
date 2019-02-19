@@ -6,7 +6,7 @@
   "author": "kairusds",
   "private": true,
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --watch"
+    "start": "pm2 start index.js --deep-monitoring --watch"
   },
   "main": "index.js",
   "dependencies": {
