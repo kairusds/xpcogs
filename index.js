@@ -6,7 +6,6 @@ const {Client, Collection, RichEmbed} = require("discord.js");
 const client = new Client();
 const {Users} = require("./dbObjects");
 const {oneLine, stripIndents} = require("common-tags");
-const random = require("unique-random");
 const users = new Collection();
 const timeout = [];
 const topRankEmoji = {
