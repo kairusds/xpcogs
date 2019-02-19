@@ -5,7 +5,6 @@ module.exports = {
 		token: (process.env && process.env.TOKEN) || "NTQ3MTg3MjM2NDI5MzY1MjY4.D0zKZw.pzISHT6jHmi3FzD87dXhg7WI6yc",
 		levels: {
 			roles: {
-				"2": "test",
 				"5": "Fidget Spinner", // (case-sensitive) role name
 				"15": "Intellectual",
 				"30": "Big Chungus",
