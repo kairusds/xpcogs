@@ -1,3 +1,6 @@
+// This is for me (Mindful) testing locally
+require('dotenv').config()
+
 const {prefix, token, levels} = require("./config").bot;
 const {Client, Collection, RichEmbed} = require("discord.js");
 const client = new Client();
@@ -5,7 +8,9 @@ const {Users} = require("./dbObjects");
 const {oneLine, stripIndents} = require("common-tags");
 const users = new Collection();
 const topRankEmoji = {
-	"1": ":first_place:", "2": ":second_place:", "3": ":third_place:"
+	"1": ":first_place:",
+	"2": ":second_place:",
+	"3": ":third_place:"
 };
 
 // restart bot every 12 hours
@@ -18,9 +23,9 @@ client.setTimeout(() => {
 // i'll improve this project in the future
 
 Reflect.defineProperty(users, "add", {
-	value: async function add(id, key, amount){
+	value: async function add(id, key, amount) {
 		const user = users.get(id);
-		if(!user){
+		if (!user) {
 			const newUser = await Users.create({
 				user_id: id,
 				exp: amount,
@@ -29,13 +34,13 @@ Reflect.defineProperty(users, "add", {
 			users.set(id, newUser);
 			return newUser;
 		}
-		
+
 		user[key] += Number(amount);
 		return user.save();
 	}
 });
 
-Reflect.defineProperty(users, "get", {
+Reflect.defineProperty(users, "getInf", {
 	value: function get(id, key){
 		const user = users.get(id);
 		return user ? user[key] : 0;
@@ -57,7 +62,7 @@ client.on("message", async (message) => {
 	if(message.author.bot || !message.guild) return; // bot not allowed, guild-only
 	if(!message.guild.available) return;
 	users.add(message.member.id, "exp", 1);
-	
+
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.get(message.member.id, "exp")));
 	const {roles} = levels;
 	if(users.get(message.member.id, "level") < currentLevel){

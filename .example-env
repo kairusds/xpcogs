@@ -1,0 +1,12 @@
+# dotenv
+
+# Not including a .env file should still work, but
+# if you want to test locally, duplicate this file,
+# rename it to .env and fill in the blanks.
+# Do not surround the equal sign with spaces.
+
+# DATABASE_URL should start with "postgress://" and be extremely long
+# TOKEN should be a Discord bot token and be pretty long
+
+DATABASE_URL=
+TOKEN=
