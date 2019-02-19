@@ -74,7 +74,8 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
-		users.add(message.member.id, "exp", random(5, 13));
+		const gainedExp = Math.floor((Math.random() * (15 - 5 + 1)) + 5));
+		users.add(message.member.id, "exp", gainedExp);
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
 			if(index > -1) timeout.splice(index, 1);
