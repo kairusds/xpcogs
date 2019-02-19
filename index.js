@@ -141,7 +141,7 @@ client.on("message", async (message) => {
 		let target = message.author;
 		if(args[0]) target = userMentionRegex(args[0]);
 		if(!target) return message.channel.send("That user cannot be found.");
-		const rank = [...users.sort((a, b) => b.exp - a.exp).keys()].indexOf(target.id);
+		const rank = [...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(target.id);
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
 			.setAuthor(target.tag, target.displayAvatarURL)
