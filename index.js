@@ -89,16 +89,16 @@ client.on("message", async (message) => {
 	if(!message.guild.available) return;
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
-		const gainedExp = Math.floor((Math.random() * (8 - 4 + 1)) + 4);
+		const gainedExp = Math.floor((Math.random() * (25 - 15 + 1)) + 15);
 		users.add(message.member.id, "exp", Number(gainedExp));
 		client.setTimeout(() => {
 			const index = timeout.indexOf(message.member.id);
 			if(index > -1) timeout.splice(index, 1);
-		}, 1000 * 45);
+		}, 1000 * 60);
 		timeout.push(message.member.id);
 	}
 
-	// 100 exp = level 1, 200 exp = level 2 and so on...
+	// 100 exp = level 1, 700 exp = level 2 and so on... idk how this works tbh
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
 	if(users.getInf(message.member.id, "level") < currentLevel){
@@ -163,7 +163,7 @@ client.on("message", async (message) => {
 			.filter(user => client.users.has(user.user_id))
 			.map((user, position) => output.push([
 				client.users.get(user.user_id).tag,
-				(position + 1), // rank number
+				position, // rank number
 				user.level,
 				user.exp
 			]));
@@ -183,9 +183,9 @@ client.on("message", async (message) => {
 			const embed = new RichEmbed()
 				.setColor("#3CB4FE")
 				.setTitle("**Rankings**");
-			output[page - 1].map(element => {
-					[name, rank, level, exp] = element;
-					embed.addField(`**${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}  ${name}**`, stripIndents`
+			output[page - 1].map((val, i) => {
+					[name, rank, level, exp] = val;
+					embed.addField(`**${rank < 3 ? topRankEmoji[rank + 1] : `:beginner: ${rank + 1}`}  ${name}**`, stripIndents`
 						**:large_orange_diamond: Level**: ${level}
 						**:diamond_shape_with_a_dot_inside: EXP**: ${exp}
 					`, true)
@@ -213,7 +213,7 @@ client.on("message", async (message) => {
 		// within those sixty seconds, not just once.
 		const collector = sentMessage.createReactionCollector(filter, {time: 60 * 1000});
 		collector.on("collect", reactionReactor);
-		collector.on("remove", reactionReactor, message.author);
+		collector.on("remove", reactionReactor);
 		collector.once("end", () => sentMessage.delete()); // delete message to clean the chat
 	}else if(command == "help"){
 		const msg = stripIndents`
