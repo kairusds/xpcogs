@@ -184,8 +184,8 @@ client.on("message", async (message) => {
 			page = page > output.length ? output.length : page;
 			const embed = new RichEmbed()
 				.setColor("#f7f7f7")
-				.setTitle("Rankings");
-				.setDescription(`Page ${page} of ${output.length}`)
+				.setTitle("Rankings")
+				.setDescription(`Page ${page} of ${output.length}`);
 			output[page - 1].map((val, i) => {
 					[name, rank, level, exp] = val;
 					embed.addField(`**${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}  ${name}**`, stripIndents`
