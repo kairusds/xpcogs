@@ -1,5 +1,8 @@
 // This is for me (Mindful) testing locally
-// require('dotenv').config()
+// "If not in production, load dotenv"
+if (!/production/i.test(process.env.NODE_ENV)) {
+	require("dotenv").config();
+}
 
 const {prefix, token, levels} = require("./config").bot;
 const {Client, Collection, RichEmbed} = require("discord.js");
@@ -12,6 +15,10 @@ const topRankEmoji = {
 	"1": ":first_place:",
 	"2": ":second_place:",
 	"3": ":third_place:"
+};
+const emojis = {
+	backward: "◀",
+	forward: "▶"
 };
 
 // restart bot every 12 hours
@@ -90,7 +97,7 @@ client.on("message", async (message) => {
 		}, 1000 * 45);
 		timeout.push(message.member.id);
 	}
-	
+
 	// 100 exp = level 1, 200 exp = level 2 and so on...
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
@@ -149,20 +156,69 @@ client.on("message", async (message) => {
 			.addField("**:large_orange_diamond: Level**", users.getInf(target.id, "level"), true)
 			.addField("**:diamond_shape_with_a_dot_inside: EXP**", users.getInf(target.id, "exp"), true);
 		return message.channel.send(embed);
-	}else if(command == "rankings"){
-		const embed = new RichEmbed()
-			.setColor("#3CB4FE")
-			.setTitle("Rankings");
+	} else if(command == "rankings"){
+		let output = [];
+		const chunk = 5;
+
 		users.sort((a, b) => (b.level - a.level || b.exp - a.exp))
 			.filter(user => client.users.has(user.user_id))
-			.first(15)
-			.map((user, position) => embed.addField(`${position < 3 ? topRankEmoji[position + 1] : `:beginner: ${position + 1}`}    ${client.users.get(user.user_id).tag}`, stripIndents`
-				:large_orange_diamond: Level: ${user.level}
-				:diamond_shape_with_a_dot_inside: EXP: ${user.exp}
-			`, true));
-		return message.channel.send(embed);
+			.map((user, position) => output.push([
+				client.users.get(user.user_id).tag,
+				user.level,
+				user.exp
+			]))
+
+		output = output.reduce((acc, val, i) => {
+			const chunkIndex = Math.floor(i / chunk);
+			if (!acc[chunkIndex]) {
+				acc[chunkIndex] = [];
+			}
+			acc[chunkIndex].push(val);
+			return acc;
+		}, [])
+
+		function createEmbed(page){
+			// page = _.clamp(page, 1, output.length)
+			page = page < 1 ? 1 : page;
+			page = page > output.length ? output.length : page;
+			const embed = new RichEmbed()
+				.setColor("#3CB4FE")
+				.setTitle("Rankings");
+			console.log(output)
+
+			output[page - 1]
+				.map((val, i, arr) => {
+					[name, level, exp] = val;
+					embed.addField(`${i < 3 ? topRankEmoji[i + 1] : `:beginner: ${i + 1}`}    ${name}`, stripIndents`
+						:large_orange_diamond: Level: ${level}
+						:diamond_shape_with_a_dot_inside: EXP: ${exp}
+					`, true)
+				})
+			return embed;
+		}
+
+		let page = 1;
+		const sentMessage = await message.channel.send(`**Rankings**: Page ${page} of ${output.length}`, createEmbed(page));
+		await sentMessage.react(emojis.backward);
+		await sentMessage.react(emojis.forward);
+		const filter = (reaction, user) => {
+			return [emojis.backward, emojis.forward].includes(reaction.emoji.name) && user.id === message.author.id;
+		};
+
+		// Using the promise-based collector will only fire the promise exactly once.
+		// The user will probably want to move back and forth several times
+		// within those sixty seconds, not just once.
+		const collector = sentMessage.createReactionCollector(filter, { time: 60 * 1000 });
+		collector.on('collect', async function (reaction) {
+			const emoji = [reaction.emoji.name, reaction.emoji.id];
+			if (emoji.includes(emojis.backward)) { page-- }
+			if (emoji.includes(emojis.forward)) { page++ }
+			await sentMessage.edit(`**Rankings**: Page ${page} of ${output.length}`, createEmbed(page));
+		});
+
 	}else if(command == "help"){
 		const msg = stripIndents`
+			\`\`\`
 			[regular brackets] = optional, user_mention = mentioned user with @ or <@user_id>
 			===================
 			rank [user_mention] - View a user's rank or level.
@@ -170,8 +226,9 @@ client.on("message", async (message) => {
 			info - View info regarding the bot.
 			ping - Pong!
 			===================
+			\`\`\`
 		`;
-		return message.channel.send(msg, {code: true});
+		return message.channel.send(msg);
 	}else if(command == "info"){
 		const embed = new RichEmbed()
 			.setColor("#3CB4FE")
