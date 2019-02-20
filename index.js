@@ -98,7 +98,7 @@ client.on("message", async (message) => {
 		timeout.push(message.member.id);
 	}
 
-	// 100 exp = level 1, 700 exp = level 2 and so on... idk how this works tbh
+	// idk how this works tbh
 	const currentLevel = Math.floor(0.1 * Math.sqrt(users.getInf(message.member.id, "exp")));
 	const {roles} = levels;
 	if(users.getInf(message.member.id, "level") < currentLevel){
@@ -161,9 +161,9 @@ client.on("message", async (message) => {
 		const chunk = 5;
 		users.sort((a, b) => (b.level - a.level || b.exp - a.exp))
 			.filter(user => client.users.has(user.user_id))
-			.map((user, position) => output.push([
+			.map((user, index) => output.push([
 				client.users.get(user.user_id).tag,
-				position, // rank number
+				[...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(user.user_id) + 1, // rank number (hack)
 				user.level,
 				user.exp
 			]));
@@ -182,10 +182,10 @@ client.on("message", async (message) => {
 			page = page > output.length ? output.length : page;
 			const embed = new RichEmbed()
 				.setColor("#3CB4FE")
-				.setTitle("**Rankings**");
+				.setTitle("Rankings");
 			output[page - 1].map((val, i) => {
 					[name, rank, level, exp] = val;
-					embed.addField(`**${rank < 3 ? topRankEmoji[rank + 1] : `:beginner: ${rank + 1}`}  ${name}**`, stripIndents`
+					embed.addField(`**${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}  ${name}**`, stripIndents`
 						**:large_orange_diamond: Level**: ${level}
 						**:diamond_shape_with_a_dot_inside: EXP**: ${exp}
 					`, true)
@@ -213,7 +213,6 @@ client.on("message", async (message) => {
 		// within those sixty seconds, not just once.
 		const collector = sentMessage.createReactionCollector(filter, {time: 60 * 1000});
 		collector.on("collect", reactionReactor);
-		collector.on("remove", reactionReactor);
 		collector.once("end", () => sentMessage.delete()); // delete message to clean the chat
 	}else if(command == "help"){
 		const msg = stripIndents`
