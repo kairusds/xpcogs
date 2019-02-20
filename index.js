@@ -108,7 +108,7 @@ client.on("message", async (message) => {
 		user.save();
 		users.add(message.member.id, "level", 1);
 		const embed = new RichEmbed()
-			.setColor("#3CB4FE")
+			.setColor("#5cb85c")
 			.setTitle("Level Up!")
 			.setAuthor(message.author.tag, message.author.displayAvatarURL)
 			.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
@@ -118,12 +118,13 @@ client.on("message", async (message) => {
 	if(currentLevel in roles){
 		const aquiredRole = message.guild.roles.find(val => val.name === roles[currentLevel]);
 		message.member.addRole(acquiredRole);
-		message.reply(`You have acquired the \"${acquiredRole.name}\" role.`);
+		channel.send(`${message.author} You have acquired the **${acquiredRole.name}** role.`);
 	}
 
 	if(!message.content.startsWith(prefix)) return;
 	const args = message.content.slice(prefix.length).split(/ +/g);
 	const command = args.shift().toLowerCase();
+	if(["ping", "rank", "rankings", "help", "info"].includes(command) && message.channel.id !== channel.id) await channel.send(`${message.author}`);
 
 	if(command == "set"){
 		if(!message.author.id === "203437397478735873") return message.reply(":middle_finger:");
@@ -142,7 +143,7 @@ client.on("message", async (message) => {
 	}else if(command == "ping"){
 		const pingMsg = await channel.send("Pinging...");
 		return pingMsg.edit(oneLine`
-			${message.author} Pong! :heartpulse: ${pingMsg.createdTimestamp - message.createdTimestamp}ms ||
+			Pong! :heartpulse: ${pingMsg.createdTimestamp - message.createdTimestamp}ms ||
 			${client.ping ? `:heartbeat: ${Math.round(client.ping)}ms.` : ""}
 		`);
 	}else if(command == "rank"){
@@ -151,12 +152,12 @@ client.on("message", async (message) => {
 		if(!target) return channel.send("That user cannot be found.");
 		const rank = [...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(target.id) + 1;
 		const embed = new RichEmbed()
-			.setColor("#3CB4FE")
+			.setColor("#5bc0de")
 			.setAuthor(target.tag, target.displayAvatarURL)
 			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}`, true)
 			.addField("**:large_orange_diamond: Level**", users.getInf(target.id, "level"), true)
 			.addField("**:diamond_shape_with_a_dot_inside: EXP**", users.getInf(target.id, "exp"), true);
-		return channel.send(`${message.author}`, embed);
+		return channel.send(embed);
 	} else if(command == "rankings"){
 		let output = [];
 		const chunk = 5;
@@ -182,20 +183,21 @@ client.on("message", async (message) => {
 			page = page < 1 ? 1 : page;
 			page = page > output.length ? output.length : page;
 			const embed = new RichEmbed()
-				.setColor("#3CB4FE")
+				.setColor("#f7f7f7")
 				.setTitle("Rankings");
+				.setDescription(`Page ${page} of ${output.length}`)
 			output[page - 1].map((val, i) => {
 					[name, rank, level, exp] = val;
 					embed.addField(`**${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}  ${name}**`, stripIndents`
 						**:large_orange_diamond: Level**: ${level}
 						**:diamond_shape_with_a_dot_inside: EXP**: ${exp}
-					`, true)
+					`, true);
 				});
 			return embed;
 		}
 
 		let page = 1;
-		const sentMessage = await channel.send(`${message.author} __Page ${page} of ${output.length}__`, createEmbed(page));
+		const sentMessage = await channel.send(createEmbed(page));
 		await sentMessage.react(emojis.backward);
 		await sentMessage.react(emojis.forward);
 		const filter = (reaction, user) => {
@@ -207,7 +209,7 @@ client.on("message", async (message) => {
 			const emoji = [reaction.emoji.name, reaction.emoji.id];
 			if(emoji.includes(emojis.backward)) page -= 1; // spam protection
 			if(emoji.includes(emojis.forward)) page += 1;
-			await sentMessage.edit(`**Rankings**: Page ${page} of ${output.length}`, createEmbed(page));
+			await sentMessage.edit("", createEmbed(page));
 		}
 		// Using the promise-based collector will only fire the promise exactly once.
 		// The user will probably want to move back and forth several times
@@ -227,17 +229,18 @@ client.on("message", async (message) => {
 			===================
 			\`\`\`
 		`;
-		return channel.send(`${message.author} ${msg}`);
+		return channel.send(msg);
 	}else if(command == "info"){
 		const embed = new RichEmbed()
-			.setColor("#3CB4FE")
-			.setTitle("**Info**")
+			.setColor("#5bc0de")
+			.setTitle("Info")
 			.setAuthor(client.user.tag, client.user.displayAvatarURL, "https://twitter.com/kairusds")
+			.setDescription("Barebones chat levels bot.")
 			.addField("**Author**", "HarveyHans (kairusds)", true)
 			.addField("**Collaborator**", "MindfulMinun (Benji)", true)
 			.addField("**Users**", client.users.size, true)
 			.addField("**Server Platform**", process.platform, true);
-		channel.send(`${message.author}`, embed);
+		channel.send(embed);
 	}
 });
 
