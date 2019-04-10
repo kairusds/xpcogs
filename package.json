@@ -13,7 +13,7 @@
     "common-tags": "^1.8.0",
     "discord.js": "^11.4.2",
     "pg": "^7.8.0",
-    "sequelize": "^5.1.1",
+    "sequelize": "^5.2.15",
     "uws": "^9.14.0"
   },
   "devDependencies": {
