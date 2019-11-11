@@ -1,3 +1,7 @@
+/**
+ * TODO: whitelist channel option
+ */
+
 // This is for me (Mindful) testing locally
 // "If not in production, load dotenv"
 if (!/production/i.test(process.env.NODE_ENV)) {
@@ -58,7 +62,7 @@ function userMentionRegex(mention){
 }
 
 function createUsers(){
-	var count = 0;
+	let count = 0;
 	// waaw double map
 	client.guilds.map((guild, index) => {
 		if(!guild.available) return;
@@ -87,7 +91,6 @@ client.once("ready", async () => {
 client.on("message", async (message) => {
 	if(message.author.bot || !message.guild) return;
 	if(!message.guild.available) return;
-	const channel = message.guild.channels.get("544064816487071754");
 	// exp spam prevention
 	if(!timeout.includes(message.member.id)){
 		const gainedExp = Math.floor((Math.random() * (25 - 15 + 1)) + 15);
@@ -112,19 +115,19 @@ client.on("message", async (message) => {
 			.setTitle("Level Up!")
 			.setAuthor(message.author.tag, message.author.displayAvatarURL)
 			.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
-		channel.send(`${message.author}`, embed);
+		message.channel.send(`${message.author}`, embed);
 	}
 
 	if(currentLevel in roles){
 		const aquiredRole = message.guild.roles.find(val => val.name === roles[currentLevel]);
 		message.member.addRole(acquiredRole);
-		channel.send(`${message.author} You have acquired the **${acquiredRole.name}** role.`);
+		message.channel.send(`${message.author} You have acquired the **${acquiredRole.name}** role.`);
 	}
 
 	if(!message.content.startsWith(prefix)) return;
 	const args = message.content.slice(prefix.length).split(/ +/g);
 	const command = args.shift().toLowerCase();
-	if(["ping", "rank", "rankings", "help", "info"].includes(command) && message.channel.id !== channel.id) await channel.send(`${message.author}`);
+	// if(["ping", "rank", "rankings", "help", "info"].includes(command)) await message.channel.send(`${message.author}`);
 
 	if(command == "set"){
 		if(!message.author.id === "203437397478735873") return message.reply(":middle_finger:");
@@ -141,7 +144,7 @@ client.on("message", async (message) => {
 		if(!user) return message.reply(":thinking:");
 		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${user[args[1]]}`);
 	}else if(command == "ping"){
-		const pingMsg = await channel.send("Pinging...");
+		const pingMsg = await message.channel.send("Pinging...");
 		return pingMsg.edit(oneLine`
 			Pong! :heartpulse: ${pingMsg.createdTimestamp - message.createdTimestamp}ms ||
 			${client.ping ? `:heartbeat: ${Math.round(client.ping)}ms.` : ""}
@@ -149,7 +152,7 @@ client.on("message", async (message) => {
 	}else if(command == "rank"){
 		let target = message.author;
 		if(args[0]) target = userMentionRegex(args[0]);
-		if(!target) return channel.send("That user cannot be found.");
+		if(!target) return message.channel.send("That user cannot be found.");
 		const rank = [...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(target.id) + 1;
 		const embed = new RichEmbed()
 			.setColor("#5bc0de")
@@ -157,7 +160,7 @@ client.on("message", async (message) => {
 			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}`, true)
 			.addField("**:large_orange_diamond: Level**", users.getInf(target.id, "level"), true)
 			.addField("**:diamond_shape_with_a_dot_inside: EXP**", users.getInf(target.id, "exp"), true);
-		return channel.send(embed);
+		return message.channel.send(embed);
 	} else if(command == "rankings"){
 		let output = [];
 		const chunk = 5;
@@ -197,7 +200,7 @@ client.on("message", async (message) => {
 		}
 
 		let page = 1;
-		const sentMessage = await channel.send(createEmbed(page));
+		const sentMessage = await message.channel.send(createEmbed(page));
 		await sentMessage.react(emojis.backward);
 		await sentMessage.react(emojis.forward);
 		const filter = (reaction, user) => {
@@ -229,7 +232,7 @@ client.on("message", async (message) => {
 			===================
 			\`\`\`
 		`;
-		return channel.send(msg);
+		return message.channel.send(msg);
 	}else if(command == "info"){
 		const embed = new RichEmbed()
 			.setColor("#5bc0de")
@@ -240,7 +243,7 @@ client.on("message", async (message) => {
 			.addField("**Collaborator**", "MindfulMinun (Benji)", true)
 			.addField("**Users**", client.users.size, true)
 			.addField("**Server Platform**", process.platform, true);
-		channel.send(embed);
+		message.channel.send(embed);
 	}
 });
 
