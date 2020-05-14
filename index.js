@@ -58,7 +58,7 @@ Reflect.defineProperty(users, "getInf", {
 
 function userMentionRegex(mention){
 	const matches = mention.match(/^<@!?(\d+)>$/);
-	return client.users.get(matches[1]);
+	return client.users.cache.get(matches[1]);
 }
 
 function createUsers(){
@@ -172,7 +172,7 @@ client.on("message", async (message) => {
 		users.sort((a, b) => (b.level - a.level || b.exp - a.exp))
 			.filter(user => client.users.cache.has(user.user_id))
 			.map((user, index) => output.push([
-				client.users.get(user.user_id).tag,
+				client.users.cache.get(user.user_id).tag,
 				[...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(user.user_id) + 1, // rank number (hack)
 				user.level,
 				user.exp
