@@ -170,7 +170,7 @@ client.on("message", async (message) => {
 		let output = [];
 		const chunk = 5;
 		users.sort((a, b) => (b.level - a.level || b.exp - a.exp))
-			.filter(user => client.users.has(user.user_id))
+			.filter(user => client.users.cache.has(user.user_id))
 			.map((user, index) => output.push([
 				client.users.get(user.user_id).tag,
 				[...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(user.user_id) + 1, // rank number (hack)
