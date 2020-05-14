@@ -84,7 +84,12 @@ client.once("ready", async () => {
 	createUsers();
 	const storedExps = await Users.findAll();
 	storedExps.forEach(b => users.set(b.user_id, b));
-	await client.user.setPresence({status: "online", activity: {name: "_help"});
+	await client.user.setPresence({
+		status: "online",
+		activity: {
+			name: "_help"
+		}
+	});
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
