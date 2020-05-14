@@ -9,7 +9,7 @@ if (!/production/i.test(process.env.NODE_ENV)) {
 }
 
 const {prefix, token, levels} = require("./config").bot;
-const {Client, Collection, RichEmbed} = require("discord.js");
+const {Client, Collection, MessageEmbed} = require("discord.js");
 const client = new Client();
 const {Users} = require("./dbObjects");
 const {oneLine, stripIndents} = require("common-tags");
@@ -115,7 +115,7 @@ client.on("message", async (message) => {
 		user.exp = 0;
 		user.save();
 		users.add(message.member.id, "level", 1);
-		const embed = new RichEmbed()
+		const embed = new MessageEmbed()
 			.setColor("#5cb85c")
 			.setTitle("Level Up!")
 			.setAuthor(message.author.tag, message.author.displayAvatarURL)
@@ -159,7 +159,7 @@ client.on("message", async (message) => {
 		if(args[0]) target = userMentionRegex(args[0]);
 		if(!target) return message.channel.send("That user cannot be found.");
 		const rank = [...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(target.id) + 1;
-		const embed = new RichEmbed()
+		const embed = new MessageEmbed()
 			.setColor("#5bc0de")
 			.setAuthor(target.tag, target.displayAvatarURL)
 			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}`, true)
@@ -190,7 +190,7 @@ client.on("message", async (message) => {
 		function createEmbed(page){
 			page = page < 1 ? 1 : page;
 			page = page > output.length ? output.length : page;
-			const embed = new RichEmbed()
+			const embed = new MessageEmbed()
 				.setColor("#f7f7f7")
 				.setTitle("Rankings")
 				.setDescription(`Page ${page} of ${output.length}`);
@@ -239,7 +239,7 @@ client.on("message", async (message) => {
 		`;
 		return message.channel.send(msg);
 	}else if(command == "info"){
-		const embed = new RichEmbed()
+		const embed = new MessageEmbed()
 			.setColor("#5bc0de")
 			.setTitle("Info")
 			.setAuthor(client.user.tag, client.user.displayAvatarURL, "https://twitter.com/kairusds")
