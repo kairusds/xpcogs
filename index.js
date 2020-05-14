@@ -66,7 +66,7 @@ function createUsers(){
 	// i have to fucking rewrite this because of v12
 	client.guilds.cache((index, guild) => {
 		if(!guild.available) return;
-		guild.members.cache((index, member) => {
+		guild.members.cache(async (index, member) => {
 			if(users.get(member.id) || member.user.bot) return;
 			const newUser = await Users.create({
 				user_id: member.id,
