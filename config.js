@@ -21,6 +21,6 @@ module.exports = {
 			ssl: true
 		},
 		logging: false,
-		operatorsAliases: false
+		operatorsAliases: 0
 	}
 }
