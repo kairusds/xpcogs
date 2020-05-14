@@ -246,7 +246,7 @@ client.on("message", async (message) => {
 			.setDescription("Barebones chat levels bot.")
 			.addField("**Author**", "HarveyHans (kairusds)", true)
 			.addField("**Collaborator**", "MindfulMinun (Benji)", true)
-			.addField("**Users**", client.users.size, true)
+			.addField("**Users**", client.users.cache.size, true)
 			.addField("**Server Platform**", process.platform, true);
 		message.channel.send(embed);
 	}
