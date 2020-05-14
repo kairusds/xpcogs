@@ -63,10 +63,10 @@ function userMentionRegex(mention){
 
 function createUsers(){
 	let count = 0;
-	// waaw double map
-	client.guilds.map((guild, index) => {
+	// i have to fucking rewrite this because of v12
+	client.guilds.cache((index, guild) => {
 		if(!guild.available) return;
-		guild.members.map(async (member, index) => {
+		guild.members.cache((index, member) => {
 			if(users.get(member.id) || member.user.bot) return;
 			const newUser = await Users.create({
 				user_id: member.id,
