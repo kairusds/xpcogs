@@ -135,7 +135,7 @@ client.on("message", async (message) => {
 	// if(["ping", "rank", "rankings", "help", "info"].includes(command)) await message.channel.send(`${message.author}`);
 
 	if(command == "set"){
-		if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
+		if(message.author.id !== "***REMOVED***") return message.reply(":middle_finger:");
 		if(!args[0] || !args[1] || !args[2]) return message.reply(":thinking:");
 		const user = users.get(args[0]);
 		if(!user) return message.reply(":thinking:");
@@ -143,7 +143,7 @@ client.on("message", async (message) => {
 		user.save();
 		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${args[2]}`);
 	}else if(command == "get"){
-		if(!message.author.id === "***REMOVED***") return message.reply(":middle_finger:");
+		if(message.author.id !== "***REMOVED***") return message.reply(":middle_finger:");
 		if(!args[0] || !args[1]) return message.reply(":thinking:");
 		const user = users.get(args[0]);
 		if(!user) return message.reply(":thinking:");
