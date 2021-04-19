@@ -87,7 +87,7 @@ client.once("ready", async () => {
 	await client.user.setPresence({
 		status: "online",
 		activity: {
-			name: "_help"
+			name: "Command: _help"
 		}
 	});
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -120,19 +120,19 @@ client.on("message", async (message) => {
 			.setTitle("Level Up!")
 			.setAuthor(message.author.tag, message.author.displayAvatarURL)
 			.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
-		message.channel.send(`${message.author}`, embed);
+		message.reply(`${message.author}`, embed);
 	}
 
 	if(currentLevel in roles){
 		const aquiredRole = message.guild.roles.find(val => val.name === roles[currentLevel]);
 		message.member.addRole(acquiredRole);
-		message.channel.send(`${message.author} You have acquired the **${acquiredRole.name}** role.`);
+		message.reply(`${message.author} You have acquired the **${acquiredRole.name}** role.`);
 	}
 
 	if(!message.content.startsWith(prefix)) return;
 	const args = message.content.slice(prefix.length).split(/ +/g);
 	const command = args.shift().toLowerCase();
-	// if(["ping", "rank", "rankings", "help", "info"].includes(command)) await message.channel.send(`${message.author}`);
+	// if(["ping", "rank", "rankings", "help", "info"].includes(command)) await message.reply(`${message.author}`);
 
 	if(command == "set"){
 		if(message.author.id !== "203437397478735873") return message.reply(":middle_finger:");
@@ -149,7 +149,7 @@ client.on("message", async (message) => {
 		if(!user) return message.reply(":thinking:");
 		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${user[args[1]]}`);
 	}else if(command == "ping"){
-		const pingMsg = await message.channel.send("Pinging...");
+		const pingMsg = await message.reply("Pinging...");
 		return pingMsg.edit(oneLine`
 			Pong! :heartpulse: ${pingMsg.createdTimestamp - message.createdTimestamp}ms ||
 			${client.ping ? `:heartbeat: ${Math.round(client.ping)}ms.` : ""}
@@ -157,7 +157,7 @@ client.on("message", async (message) => {
 	}else if(command == "rank"){
 		let target = message.author;
 		if(args[0]) target = userMentionRegex(args[0]);
-		if(!target) return message.channel.send("That user cannot be found.");
+		if(!target) return message.reply("That user cannot be found.");
 		const rank = [...users.sort((a, b) => (b.level - a.level || b.exp - a.exp)).keys()].indexOf(target.id) + 1;
 		const embed = new MessageEmbed()
 			.setColor("#5bc0de")
@@ -165,7 +165,7 @@ client.on("message", async (message) => {
 			.addField("**Rank**", `${rank < 4 ? topRankEmoji[rank] : `:beginner: ${rank}`}`, true)
 			.addField("**:large_orange_diamond: Level**", users.getInf(target.id, "level"), true)
 			.addField("**:diamond_shape_with_a_dot_inside: EXP**", users.getInf(target.id, "exp"), true);
-		return message.channel.send(embed);
+		return message.reply(embed);
 	} else if(command == "rankings"){
 		let output = [];
 		const chunk = 5;
@@ -205,7 +205,7 @@ client.on("message", async (message) => {
 		}
 
 		let page = 1;
-		const sentMessage = await message.channel.send(createEmbed(page));
+		const sentMessage = await message.reply(createEmbed(page));
 		await sentMessage.react(emojis.backward);
 		await sentMessage.react(emojis.forward);
 		const filter = (reaction, user) => {
@@ -237,7 +237,7 @@ client.on("message", async (message) => {
 			===================
 			\`\`\`
 		`;
-		return message.channel.send(msg);
+		return message.reply(msg);
 	}else if(command == "info"){
 		const embed = new MessageEmbed()
 			.setColor("#5bc0de")
@@ -248,7 +248,7 @@ client.on("message", async (message) => {
 			.addField("**Collaborator**", "MindfulMinun (Benji)", true)
 			.addField("**Users**", client.users.cache.size, true)
 			.addField("**Server Platform**", process.platform, true);
-		message.channel.send(embed);
+		message.reply(embed);
 	}
 });
 

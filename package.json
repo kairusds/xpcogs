@@ -12,9 +12,8 @@
   "dependencies": {
     "common-tags": "^1.8.0",
     "discord.js": "^12.5.3",
-    "pg": "^8.2.0",
-    "sequelize": "^6.3.5",
-    "uws": "^9.14.0"
+    "pg": "^8.6.0",
+    "sequelize": "^6.6.2"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
