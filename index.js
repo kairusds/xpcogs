@@ -117,14 +117,22 @@ client.on("message", async (message) => {
 		users.add(message.member.id, "level", 1);
 		const embed = new MessageEmbed()
 			.setColor("#5cb85c")
-			.setTitle("Level Up!")
 			.setAuthor(message.author.tag, message.author.displayAvatarURL)
+			.setImage("https://i.imgur.com/qgpcufH.gif")
 			.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
 		message.reply(`${message.author}`, embed);
 	}
 
 	if(currentLevel in roles){
-		const aquiredRole = message.guild.roles.find(val => val.name === roles[currentLevel]);
+		const acquiredRole = message.guild.roles.cache.find(val => val.name === roles[currentLevel].name);
+		if(!acquiredRole) acquiredRole = await message.guild.roles.create({
+			data: {
+				name: roles[currentLevel].name,
+				color: roles[currentLevel].color,
+				permissions: roles[currentLevel].permissions
+			},
+			reason: "Role created for XPCogs"
+		});
 		message.member.addRole(acquiredRole);
 		message.reply(`${message.author} You have acquired the **${acquiredRole.name}** role.`);
 	}
@@ -230,8 +238,8 @@ client.on("message", async (message) => {
 			\`\`\`
 			[regular brackets] = optional, user_mention = mentioned user with @ or <@user_id>
 			===================
-			rank [user_mention] - View a user's rank or level.
-			rankings - View the top 15 users with the most EXP / highest Level.
+			rank [user_mention] - View a user's rank.
+			rankings - View the top 15 users.
 			info - View info regarding the bot.
 			ping - Pong!
 			===================
