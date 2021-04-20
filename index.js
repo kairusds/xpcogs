@@ -120,7 +120,7 @@ client.on("message", async (message) => {
 			.setAuthor(message.author.tag, message.author.displayAvatarURL)
 			.setImage("https://i.imgur.com/qgpcufH.gif")
 			.setDescription(`${message.author.tag} is now level ${currentLevel}!`);
-		message.reply(`${message.author}`, embed);
+		message.channel.send("", embed);
 	}
 
 	if(currentLevel in roles){
@@ -142,15 +142,15 @@ client.on("message", async (message) => {
 	const command = args.shift().toLowerCase();
 	// if(["ping", "rank", "rankings", "help", "info"].includes(command)) await message.reply(`${message.author}`);
 
-	if(command == "set"){
+	if(command == "set"){ // set user_id level|exp value
 		if(message.author.id !== "***REMOVED***") return message.reply(":middle_finger:");
 		if(!args[0] || !args[1] || !args[2]) return message.reply(":thinking:");
 		const user = users.get(args[0]);
 		if(!user) return message.reply(":thinking:");
-		user[args[1]] = args[2];
+		user[args[1]] = parseInt(args[2]);
 		user.save();
 		return message.reply(`:ok_hand: ${args[0]} > ${args[1]} = ${args[2]}`);
-	}else if(command == "get"){
+	}else if(command == "get"){ // get user_id level|exp
 		if(message.author.id !== "***REMOVED***") return message.reply(":middle_finger:");
 		if(!args[0] || !args[1]) return message.reply(":thinking:");
 		const user = users.get(args[0]);
@@ -240,6 +240,7 @@ client.on("message", async (message) => {
 			===================
 			rank [user_mention] - View a user's rank.
 			rankings - View the top 15 users.
+			site - View the rankings and bot info on the bot's website. WIP
 			info - View info regarding the bot.
 			ping - Pong!
 			===================
