@@ -8,7 +8,7 @@ module.exports = {
 				// the roles will be created if it doesnt exist, just change the position manually if "Display role members separately" is enabled
 				"1": {
 					"name": "Among",
-					"color": "BLURPLE" // see: https://discord.js.org/#/docs/main/stable/typedef/ColorResolvable
+					"color": "BLURPLE", // see: https://discord.js.org/#/docs/main/stable/typedef/ColorResolvable
 					"init_perms": [ // will only be used for creating the role if it doesn't exist
 						"MANAGE_EMOJIS",
 						"MENTION_EVERYONE"

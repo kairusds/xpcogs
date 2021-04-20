@@ -129,7 +129,7 @@ client.on("message", async (message) => {
 			data: {
 				name: roles[currentLevel].name,
 				color: roles[currentLevel].color,
-				permissions: roles[currentLevel].permissions
+				permissions: roles[currentLevel].init_perms
 			},
 			reason: "Role created for XPCogs"
 		});
